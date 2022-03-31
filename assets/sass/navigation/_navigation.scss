@@ -1,0 +1,38 @@
+/**
+ * General Menu Styles
+ */
+button.menu-toggle {
+  font-size: 14px;
+  padding: 4px 8px 4px 32px;
+  /* padding: 0.3125em 0.625em 0.3125em 2.375em; */
+}
+
+button.menu-toggle::before,
+button.menu-toggle::after,
+button.menu-toggle span::before {
+  left: 10px;
+}
+
+.main-navigation ul li a {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.site-header-favorites {
+  display: none;
+}
+
+
+@media (min-width: $breakpoint__md) {
+  .main-navigation ul.menu > li > a {
+    padding: 10px 16px; }
+  .main-navigation ul.nav-menu > li {
+    padding: 0 10px;
+  }
+  .main-navigation ul.nav-menu > li > a {
+    line-height: 50px;
+    padding: 0;
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,43 @@
+.music-list-filters {
+  margin-bottom: 10px;
+
+  &__select-wrap {
+    select {
+      font-size: 12px;
+      height: 30px;
+    }
+
+    &::after {
+      right: 10px;
+    }
+  }
+
+  &__submit,
+  &__submit[type=submit] {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 30px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 12px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+}
+
+@media screen and (min-width: $breakpoint__sm) { /* 600px */
+  .music-list-filters__select-wrap {
+    display: inline-block;
+    margin-right: 10px;
+    min-width: 120px;
+    vertical-align: middle;
+  }
+}
+
+@media screen and (min-width: $breakpoint__lg) { /* 990px */
+  .music-list-filters__select-wrap,
+  .music-list-filters__submit {
+    margin-bottom: 10px;
+  }
+}

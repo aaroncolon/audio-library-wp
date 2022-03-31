@@ -1,0 +1,248 @@
+/**
+ * Music List
+ */
+
+@media screen and (min-width: $breakpoint__md) {
+  .page-template-template-favorites .col-full,
+  .page-template-template-audio-library .col-full {
+    max-width: none;
+  }
+}
+
+.music-list {
+  @include font-size(11);
+
+  &--loading {
+    &::after {
+      -webkit-animation: fa-spin 2s infinite linear;
+      animation: fa-spin 2s infinite linear;
+      content: '\f1ce';
+      display: inline-block;
+      font-family: 'Font Awesome 5 Free';
+      line-height: 1;
+      vertical-align: middle;
+    }
+  }
+
+  &__row {
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+
+    &:first-child {
+      border-top: 1px solid #eee;
+    }
+  }
+
+  &__row-inner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  &__cell {
+    flex: 0 1 auto;
+
+    &--main {
+      width: 80%;
+    }
+
+    &--length {
+      text-align: right;
+      width: 20%;
+    }
+
+    p {
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    &--mood {
+      display: none;
+    }
+  }
+
+  &__genre {
+    background: #eeeeee;
+    border-radius: 10px;
+    display: inline-block;
+    @include font-size(10);
+    line-height: 1;
+    padding: 5px 8px;
+  }
+
+  &__btn-play-pause {
+    border-radius: 50%;
+    height: 24px;
+    padding: 0;
+    width: 24px;
+
+    &::before {
+      /*content: '\025B8';*/
+      content: '\f04b';
+      font-family: 'Font Awesome 5 Free';
+      font-size: 8px;
+      line-height: 24px;
+      vertical-align: middle;
+    }
+
+    &--loading {
+      &::before {
+        -webkit-animation: fa-spin 2s infinite linear;
+        animation: fa-spin 2s infinite linear;
+        content: '\f1ce';
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+
+    &--playing {
+      &::before {
+        /*content: '\02223\02223';*/
+        content: '\f04c';
+      }
+    }
+  }
+
+  &__title,
+  &__artist {
+    padding-left: 10px;
+  }
+
+  &__title {
+    font-weight: 700;
+  }
+
+  &__btn {
+    padding: 4px 8px;
+  }
+
+  &__pagination {
+    text-align: center;
+    .btn--load-more {
+      margin: 10px 0;
+    }
+  }
+
+  .btn--license {
+    font-weight: 700;
+  }
+
+  .btn--favorite:before {
+    content: '\02606';
+  }
+
+  .btn--is-favorite:before {
+    content: '\02605';
+  }
+}
+
+@media screen and (min-width: $breakpoint__sm) {
+
+  .music-list {
+    @include font-size(12);
+    text-align: center;
+
+    &__row {
+      flex-wrap: nowrap;
+    }
+
+    &__cell,
+    &__cell-inner {
+      flex: 0 1 auto;
+    }
+
+    &__cell:first-child {
+      flex: 0 0 auto;
+    }
+
+    &__cell:last-child {
+      flex: 0 0 auto;
+      text-align: right;
+    }
+
+    &__cell {
+      &--main {
+        width: 25%;
+      }
+
+      &--length {
+        text-align: center;
+        width: 20%;
+      }
+
+      &--genre {
+        width: 20%;
+      }
+
+      p {
+        @include font-size(10);
+        margin: 0;
+        white-space: nowrap;
+      }
+    }
+
+    &__cell-inner {
+      &--title-artist {
+        overflow: hidden;
+      }
+    }
+
+    &__title,
+    &__artist {
+      overflow: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      a {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  } // .music-list
+
+} // $breakpoint__sm
+
+@media screen and (min-width: $breakpoint__md) {
+  .music-list {
+    &__cell {
+      &--mood {
+        display: block;
+        width: 20%;
+      }
+
+      &--actions {
+        padding-left: 20px;
+      }
+
+      p {
+        @include font-size(11);
+      }
+    }
+
+    &__cell:last-child {
+      flex: 1 0 auto;
+    }
+
+    &__mood {
+      display: inline-block;
+
+      &::before {
+        content: '\00a0|\00a0';
+      }
+
+      &:first-child::before {
+        content: none;
+      }
+    }
+
+  }
+}

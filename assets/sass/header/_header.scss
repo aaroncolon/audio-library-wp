@@ -1,0 +1,95 @@
+.site-header {
+  border-bottom: none;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+.home.page.page-template-template-audio-library .site-header {
+  margin-bottom: 0;
+}
+
+.site-branding {
+  position: relative;
+}
+
+.site-branding .site-title {
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 34px;
+  text-transform: uppercase;
+}
+
+.site-branding .site-title a {
+  font-weight: 500;
+  display: block;
+  position: relative;
+}
+
+@media (min-width: $breakpoint__md) {
+  .site-header {
+    /* padding-top: 2.617924em; */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .woocommerce-active .site-header .main-navigation {
+    /* width: 73.9130434783%; */
+    width: auto;
+    /* float: left; */
+    float: right;
+    margin-right: 20px;
+    /* clear: both; */
+    clear: none; }
+
+  .woocommerce-active .site-header .site-branding,
+  .storefront-secondary-navigation.woocommerce-active .site-header .site-branding {
+    /* width: 21.7391304348%; */
+    width: auto;
+    float: left;
+    /* margin-right: 4.347826087%; */
+    margin-right: 0; }
+  .storefront-secondary-navigation.woocommerce-active .site-header .secondary-navigation {
+    width: 47.8260869565%;
+    /* float: left; */
+    float: right;
+    /* margin-right: 4.347826087%; */ }
+  .site-branding .site-title {
+    line-height: 50px;
+  }
+
+  .site-branding {
+    margin-bottom: 0; }
+
+    .woocommerce-active .site-header .site-header-cart {
+      width: auto;
+    }
+
+    .site-header-cart .cart-contents {
+      padding: 12px 0;
+    }
+
+    .site-header-cart .cart-contents::after {
+      float: none;
+      margin-left: 5px;
+    }
+
+    .site-header-favorites {
+      display: block;
+      float: right;
+      list-style-type: none;
+      margin: 0 20px 0 0;
+    }
+
+    .site-header-favorites__link:before {
+      content: '\02605';
+    }
+
+    .site-header-favorites__link:after {
+      content: attr(data-favorites);
+    }
+
+    .site-header-favorites__link {
+      line-height: 50px;
+      position: relative;
+    }
+}

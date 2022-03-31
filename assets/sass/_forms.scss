@@ -1,0 +1,41 @@
+/**
+ * Selects
+ */
+.select-wrap {
+  background-color: #eee;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.select-wrap:after {
+  color: #333;
+  content: '\f107';
+  font-family: 'Font Awesome 5 Free';
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 16px;
+  z-index: 0;
+}
+
+.select-wrap select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: #333;
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  height: 45px;
+  padding: 6px 40px 6px 12px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}

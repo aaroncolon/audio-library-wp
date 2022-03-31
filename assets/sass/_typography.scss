@@ -1,0 +1,30 @@
+body,
+button,
+input,
+textarea {
+  color: #43454b;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  line-height: 1.618;
+  text-rendering: optimizeLegibility;
+  font-weight: 400; }
+
+body {
+  font-size: 1em;
+}
+
+select {
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+
+h1,
+.alpha {
+  letter-spacing: normal;
+}
+
+.site {
+  padding-bottom: 100px;
+}

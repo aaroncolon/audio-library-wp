@@ -1,0 +1,66 @@
+.share-dialog {
+  background: #fff;
+  padding: 40px;
+  position: relative;
+  margin: 0 auto;
+  max-width: 650px;
+  width: 100%;
+
+  &--loading {
+    &::after {
+      -webkit-animation: fa-spin 2s infinite linear;
+      animation: fa-spin 2s infinite linear;
+      content: '\f1ce';
+      display: inline-block;
+      font-family: 'Font Awesome 5 Free';
+      line-height: 1;
+      vertical-align: middle;
+    }
+  }
+
+  &__status {
+    background: #eee;
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px;
+
+    &--visible {
+      display: block;
+    }
+
+    &--success {
+      background: #3adb76;
+      color: #fff;
+    }
+
+    &--alert {
+      background: #cc4b37;
+      color: #fff;
+    }
+  }
+
+  .mfp-close {
+    color: #333;
+  }
+}
+
+.share-form {
+  .form-group {
+    margin-bottom: 10px;
+  }
+
+  label {
+    display: block;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .btn {
+    &--send-email {
+      display: block;
+      width: 100%;
+    }
+  }
+}

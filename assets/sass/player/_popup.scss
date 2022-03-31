@@ -1,0 +1,216 @@
+.mfp-player-popup .mfp-content > div {
+  margin: 0 auto;
+  max-width: 700px;
+  position: relative;
+  width: 100%;
+}
+
+.mfp-player-popup .mfp-close {
+  background: #000;
+}
+
+.popup-player {
+  background: #fff;
+}
+
+.theme--dark .popup-player {
+  background: #1A1A1A;
+}
+
+.popup-player__image-wrap {
+  background: #fff;
+}
+
+.theme--dark .popup-player__image-wrap {
+  background: #0A0A0A;
+}
+
+.popup-player__image {
+  text-align: center;
+}
+
+.popup-player__image img {
+  vertical-align: middle;
+}
+
+.popup-player__table-wrap {
+  padding: 0 50px 40px;
+}
+
+.popup-player__table {
+  margin-bottom: 0;
+}
+
+.popup-player__table-thead tr {
+  background-color: #fff;
+}
+
+.theme--dark .popup-player__table-thead tr {
+  background-color: #0A0A0A;
+}
+
+.popup-player__table-thead th,
+.table > .popup-player__table-thead th {
+  border-bottom: none;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.popup-player__table-thead th:last-child {
+  text-align: right;
+}
+
+.popup-player__product-heading {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px 0;
+  position: relative;
+}
+
+.popup-player__product-heading--title:before,
+.popup-player__product-heading--length:after {
+  background: #fff;
+  content: '';
+  height: 100%;
+  position: absolute;
+  width: 50px;
+}
+
+.theme--dark .popup-player__product-heading--title:before,
+.theme--dark .popup-player__product-heading--length:after {
+  background: #0A0A0A;
+}
+
+.popup-player__product-heading--title:before {
+  right: 100%;
+  top: 0;
+}
+
+.popup-player__product-heading--length:after {
+  left: 100%;
+  top: 0;
+}
+
+
+.table > .popup-player__table-tbody > tr:first-child > td {
+  border-top: none;
+}
+
+.popup-player__table tbody tr {
+
+}
+
+.popup-player__table tbody td {
+  border-bottom: 1px solid #ccc;
+}
+
+.theme--dark .popup-player__table tbody td {
+  border-bottom: 1px solid #4D4D4D;
+}
+
+.popup-player__table tbody tr td {
+  vertical-align: middle;
+}
+
+.popup-player__table tbody .popup-player__product-icon {
+  text-align: center;
+}
+
+.popup-player__product-link {
+  position: relative;
+}
+
+.popup-player__product-link::after {
+  font-family: 'Font Awesome 5 Free';
+  font-size: 20px;
+  line-height: 1;
+  right: 100%;
+  margin-right: 15px;
+  position: absolute;
+  text-align: center;
+  top: calc(50% - (20px / 2));
+  vertical-align: middle;
+}
+
+.popup-player__product-link--loading::after {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+  color: #333;
+  content: '\f1ce';
+}
+
+.popup-player__product-link--play::after {
+  content: '\f144';
+}
+
+.popup-player__product-link--playing::after {
+  content: '\f028';
+}
+
+.popup-player__product-link--lock::after {
+  content: '\f023';
+}
+
+.popup-player__table > thead > tr > th {
+  padding: 0 8px;
+}
+
+.popup-player__table > tbody > tr > td {
+  padding: 15px 8px;
+}
+
+.popup-player__table > thead > tr > th.popup-player__product-name-th,
+.popup-player__table > tbody > tr > td.popup-player__product-name {
+  padding-left: 0;
+}
+
+.popup-player__table > thead > tr > th.popup-player__product-length-th,
+.popup-player__table > tbody > tr > td.popup-player__product-length {
+  padding-right: 0;
+}
+
+.popup-player__table td:last-child {
+  text-align: right;
+}
+
+
+.popup-player__table a:link,
+.popup-player__table a:visited {
+  color: #333;
+}
+
+
+.theme--dark .popup-player__table a:link,
+.theme--dark .popup-player__table a:visited {
+  color: #fff;
+}
+
+
+.popup-player__table a:hover,
+.popup-player__table a:active,
+.popup-player__table a:focus,
+a:link.popup-player__product-link--playing,
+.popup-player__table a:link.popup-player__product-link--playing,
+.popup-player__table-tr--playing {
+  color: #1e73be;
+}
+
+
+.theme--dark .popup-player__table a:hover,
+.theme--dark .popup-player__table a:active,
+.theme--dark .popup-player__table a:focus,
+a:link.popup-player__product-link--playing,
+.theme--dark .popup-player__table a:link.popup-player__product-link--playing,
+.theme--dark .popup-player__table-tr--playing {
+  color: #1e73be;
+}
+
+.popup-player__table-tr--lock,
+.popup-player__table-tr--lock a,
+.popup-player__table-tr--lock a:link,
+.popup-player__table-tr--lock a:visited,
+.popup-player__table-tr--lock a:hover,
+.popup-player__table-tr--lock a:focus {
+  color: #808080;
+}
