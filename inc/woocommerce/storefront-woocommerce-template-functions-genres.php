@@ -1,13 +1,24 @@
 <?php
-
 function storefront_genres() {
   // @link https://www.advancedcustomfields.com/resources/adding-fields-taxonomy-term/
+  $layout           = get_field('layout');
+  $hide_genres      = get_field('hide_specific_genres');
+  $show_hide_genres = get_field('show_hide_genres');
 
-  $genres = get_terms(array(
-    'taxonomy' => 'pa_genre'
-  ));
+  if ($hide_genres) {
+    $genres = get_terms(array(
+      'include' => $show_hide_genres,
+      'taxonomy' => 'pa_genre'
+    ));
+  } else {
+    $genres = get_terms(array(
+      'taxonomy' => 'pa_genre'
+    ));
+  }
 
   if ( empty($genres) ) { return; }
+
+  $hide_title = get_field('hide_title');
   ?>
 
   <div class="genres">
@@ -21,8 +32,9 @@ function storefront_genres() {
         $thumbUrl = $image['url'];
         $alt      = $image['alt'];
         $pageUrl  = add_query_arg( 'genre', $genre->slug, $pageUrlBase);
+        $columnClasses = ($layout === 'single-column') ? 'col-xs-12' : 'col-xs-12 col-sm-4';
       ?>
-        <div class="col-xs-12 col-sm-4">
+        <div class="<?php echo esc_attr($columnClasses) ?>">
           <div class="genre">
             <div class="genre__thumbnail-wrap">
               <a href="<?php echo esc_url($pageUrl) ?>">

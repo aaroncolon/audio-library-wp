@@ -25,6 +25,12 @@ h1,
   letter-spacing: normal;
 }
 
+.page--entry-title-hide {
+  .entry-title {
+    @include visuallyhidden;
+  }
+}
+
 .site {
   padding-bottom: 100px;
 }

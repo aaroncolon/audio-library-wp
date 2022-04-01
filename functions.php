@@ -178,6 +178,17 @@ function ml_filter_bloginfo_name( $output ) {
 }
 add_filter( 'ml_bloginfo', 'ml_filter_bloginfo_name', 10, 1 );
 
+/**
+ * Add custom body classes
+ */
+function ml_body_class($classes) {
+	$hide_title = get_field('hide_title', get_the_ID());
+	if ($hide_title) {
+		$classes = array_merge($classes, array('page--entry-title-hide'));
+	}
+	return $classes;
+}
+add_filter('body_class', 'ml_body_class');
 
 function storefront_homepage_hero() {
 	if ( ! is_front_page() ) {
@@ -237,49 +248,7 @@ if ( class_exists('woocommerce') ) {
 }
 
 /* Advanced Custom Fields */
-/* Dynamically Populate Select Field with WooCommerce Products (songs) */
-function ml_acf_load_song_field_choices($field) {
-  // reset choices
-  $field['choices'] = array();
-
-  // get WooCommerce Products
-  $args = array(
-      'post_type'      => 'product',
-      'posts_per_page' => -1,
-      'orderby'        => 'post_title',
-      'order'          => 'ASC'
-  );
-  $products = new WP_Query($args);
-
-  if ($products->have_posts()) {
-    while ($products->have_posts()) {
-      $products->the_post();
-      $field['choices'][get_the_ID()] = esc_html(get_the_title());
-    }
-    wp_reset_postdata();
-  }
-
-  return $field;
-}
-// add_filter('acf/load_field/name=ml_song', 'ml_acf_load_song_field_choices');
-add_filter('acf/load_field/name=ml_default_song', 'ml_acf_load_song_field_choices');
-add_filter('acf/load_field/name=ml_song_sub_repeater', 'ml_acf_load_song_field_choices');
-
-/**
- * Add ACF Options Page
- */
-function ml_add_acf_options_pages() {
-	if ( function_exists('acf_add_options_page') ) {
-		acf_add_options_page(array(
-			'page_title' => 'Theme General Settings',
-			'menu_title' => 'Theme Settings',
-			'menu_slug'  => 'theme-general-settings',
-			'capability' => 'manage_options',
-			'redirect'	 => false
-		));
-	}
-}
-add_action('acf/init', 'ml_add_acf_options_pages');
+require 'inc/acf-functions.php';
 
 // // Add Sign Up or Log In button to content-single-product.php
 // add_action('woocommerce_single_product_summary', 'ml_wc_display_sign_up_log_in_message', 32);
