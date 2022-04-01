@@ -93,7 +93,7 @@ add_action( 'genres', 'storefront_genres_content', 10 );
  * @see  storefront_page_content()
  */
 add_action( 'storefront_genres', 'storefront_page_header', 10 );
-// add_action( 'storefront_genres', 'storefront_page_content', 20 );
+add_action( 'storefront_genres', 'storefront_page_content', 20 );
 
 /**
  * Collections
