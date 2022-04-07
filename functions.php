@@ -179,6 +179,18 @@ function ml_filter_bloginfo_name( $output ) {
 add_filter( 'ml_bloginfo', 'ml_filter_bloginfo_name', 10, 1 );
 
 /**
+ * Add custom html element classes
+ */
+function ml_html_class($classes) {
+	$full_height = get_field('full_height', get_the_ID());
+	if ($full_height) {
+		$classes = array_merge($classes, array('full-height'));
+	}
+	return $classes;
+}
+add_filter('html_class', 'ml_html_class');
+
+/**
  * Add custom body classes
  */
 function ml_body_class($classes) {
