@@ -97,6 +97,7 @@ function ml_enqueue_scripts() {
 		'ajax_url'                 => admin_url('admin-ajax.php'),
 		'current_song'             => array('id' => 0, 'isPlaying' => false),
 		'default_song'             => ml_player_default_song(),
+		'default_image'						 => ml_player_default_image(),
 		'user_logged_in'           => is_user_logged_in(),
 		'page_template_slug'       => get_page_template_slug(),
 		'customer_type_individual' => true) // enable Individual Customer Type handling
@@ -299,23 +300,6 @@ function ml_wc_register_form_redirect() {
   }
 }
 
-/**
- * Get Page ID by Template Name
- * @param {string} full filename of template
- * @return {array} IDs of pages assigned the template
- */
-function ml_get_id_by_template($templateName) {
-	$args = array(
-    'post_type'  => 'page',
-    'fields'     => 'ids',
-    'nopaging'   => true,
-    'meta_key'   => '_wp_page_template',
-    'meta_value' => $templateName
-	);
-	$pages = get_posts($args);
-	return $pages;
-}
-
 function ml_player_default_song() {
 	$id = get_field('ml_default_song', 'option');
 
@@ -331,4 +315,9 @@ function ml_player_default_song() {
 		'tempo'            => wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'))[0],
 		'preview_song_url' => get_field('preview_song_file', $id),
 	);
+}
+
+function ml_player_default_image() {
+	$image = get_field('ml_default_image', 'option');
+	return $image['url'];
 }

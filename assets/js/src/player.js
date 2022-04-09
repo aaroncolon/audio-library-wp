@@ -69,11 +69,11 @@ const player = (function() {
   }
 
   function handleClickPlayPauseList(e) {
-    const id         = e.currentTarget.dataset.songId;
-    const url        = e.currentTarget.dataset.songUrl;
-    const songTitle  = e.currentTarget.dataset.songTitle;
-    const songArtist = e.currentTarget.dataset.songArtist;
-    const songImage  = e.currentTarget.dataset.songImage;
+    const id         = e.currentTarget.dataset.songId,
+          url        = e.currentTarget.dataset.songUrl,
+          songTitle  = e.currentTarget.dataset.songTitle,
+          songArtist = e.currentTarget.dataset.songArtist,
+          songImage  = e.currentTarget.dataset.songImage;
 
     // Load song if different than current
     if (id !== state.currSongId) {
@@ -418,7 +418,8 @@ const player = (function() {
    * Update player with selected song data
    */
   function updatePlayerDetails() {
-    $songImage.attr('src', state.songImage);
+    const songImage = (state.songImage) ? state.songImage : ml_js_data.default_image;
+    $songImage.attr('src', songImage);
     $songImage.attr('alt', state.songTitle);
     $songTitle.text(state.songTitle);
     $songArtist.text(state.songArtist);

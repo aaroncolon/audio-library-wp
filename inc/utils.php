@@ -3,7 +3,7 @@
  * Returns page id by template file name
  *
  * @param string $template name of template file including .php
- * @return array
+ * @return array IDs of pages assigned the template
  */
 function get_page_id_by_template( $template ) {
   $args = [
@@ -17,7 +17,6 @@ function get_page_id_by_template( $template ) {
   $pages = get_posts( $args );
   return $pages;
 }
-
 
 /**
  * Retrieves an array of the class names for the html element.
