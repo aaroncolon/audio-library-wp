@@ -9,7 +9,7 @@ function ml_get_favorites_total() {
 	$user_id   = $user->ID;
 	$favorites = get_user_meta($user_id, 'ml_favorites', true);
 
-	return count($favorites);
+	return ($favorites) ? count($favorites) : 0;
 }
 
 /**

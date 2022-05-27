@@ -303,16 +303,26 @@ function ml_wc_register_form_redirect() {
 function ml_player_default_song() {
 	$id = get_field('ml_default_song', 'option');
 
+	$song_image = get_post_thumbnail_id($id);
+	$song_image = ($song_image) ? wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0] : null;
+
+	$artist = wc_get_product_terms($id, 'pa_artist', array('fields' => 'names'));
+	$length = wc_get_product_terms($id, 'pa_duration', array('fields' => 'names'));
+	$genre  = wc_get_product_terms($id, 'pa_genre', array('fields' => 'names'));
+	$inst   = wc_get_product_terms($id, 'pa_instrument', array('fields' => 'names'));
+	$mood   = wc_get_product_terms($id, 'pa_mood', array('fields' => 'names'));
+	$tempo  = wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'));
+
 	return array(
 		'id'               => $id,
 		'title'            => get_the_title($id),
-		'song_image'       => wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0],
-		'artist'           => wc_get_product_terms($id, 'pa_artist', array('fields' => 'names'))[0],
-		'length'           => wc_get_product_terms($id, 'pa_duration', array('fields' => 'names'))[0],
-		'genre'            => wc_get_product_terms($id, 'pa_genre', array('fields' => 'names'))[0],
-		'inst'             => wc_get_product_terms($id, 'pa_instrument', array('fields' => 'names'))[0],
-		'mood'             => wc_get_product_terms($id, 'pa_mood', array('fields' => 'names'))[0],
-		'tempo'            => wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'))[0],
+		'song_image'       => $song_image,
+		'artist'           => (count($artist) > 0) ? $artist[0] : null,
+		'length'           => (count($length) > 0) ? $length[0] : null,
+		'genre'            => (count($genre) > 0) ? $genre[0] : null,
+		'inst'             => (count($inst) > 0) ? $inst[0] : null,
+		'mood'             => (count($mood) > 0) ? $mood[0] : null,
+		'tempo'            => (count($tempo) > 0) ? $tempo[0] : null,
 		'preview_song_url' => get_field('preview_song_file', $id),
 	);
 }
