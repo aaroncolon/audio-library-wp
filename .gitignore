@@ -3,6 +3,7 @@ coverage/
 assets/js/dist/**
 !assets/js/dist/bundle.js
 node_modules/
+/vendor/
 *.log
 
 # OS generated files
