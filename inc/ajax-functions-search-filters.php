@@ -54,7 +54,7 @@ function ml_get_posts_handler() {
     'paginate'       => true,
     'posts_per_page' => 10,
     'page'           => $page,
-    'return'         => 'ids',
+    // 'return'         => 'ids',
     'tax_query'      => $tax_query_merged,
   );
 
@@ -93,18 +93,85 @@ function ml_get_posts_handler() {
 
     // Get Product Data
     if (count($products)) :
-      foreach($products as $id) :
+      foreach($products as $product) :
+        $id = $product->id;
+        $downloads = array();
+
+        if ($product->is_type('variable')) :
+
+          // use downloads from first variation
+          $variations = $product->get_available_variations();
+          $variation = wc_get_product($variations[0]['variation_id']);
+          $variation_id = $variation->get_id();
+          $variation_dls = $variation->get_downloads();
+          
+          foreach ($variation_dls as $key => $download) :
+            $download_data = $download->get_data();
+            $download_name = $download->get_name(); // File label name
+            $download_file = $download->get_file(); // File Url
+            $download_id   = $download->get_id(); // File Id (same as $key)
+            $download_type = $download->get_file_type(); // File type
+            $download_ext  = $download->get_file_extension(); // File extension
+  
+            $file_path = parse_url($download_file, PHP_URL_PATH);
+            $file_path = $_SERVER['DOCUMENT_ROOT'] . $file_path;
+  
+            $downloads[] = array(
+              // 'data' => $download_data,
+              'key'  => $key,
+              'name' => $download_name,
+              'file' => $download_file,
+              'type' => $download_type,
+              'path' => $file_path,
+              'file_exists' => file_exists($file_path),
+              'file_size' => filesize($file_path),
+              'basename' => basename($file_path),
+            );
+          endforeach;
+
+        elseif ($product->is_type('simple')) :
+
+          foreach ($product->get_downloads() as $key => $download) :
+            $download_data = $download->get_data();
+            $download_name = $download->get_name(); // File label name
+            $download_file = $download->get_file(); // File Url
+            $download_id   = $download->get_id(); // File Id (same as $key)
+            $download_type = $download->get_file_type(); // File type
+            $download_ext  = $download->get_file_extension(); // File extension
+  
+            $file_path = parse_url($download_file, PHP_URL_PATH);
+            $file_path = $_SERVER['DOCUMENT_ROOT'] . $file_path;
+  
+            $downloads[] = array(
+              // 'data' => $download_data,
+              'key'  => $key,
+              'name' => $download_name,
+              'file' => $download_file,
+              'type' => $download_type,
+              'path' => $file_path,
+              'file_exists' => file_exists($file_path),
+              'file_size' => filesize($file_path),
+              'basename' => basename($file_path),
+            );
+          endforeach;
+
+        endif;
+
         $result['products'][] = array(
           'id'               => $id,
           'title'            => get_the_title($id),
-          'song_image'       => wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0],
+          'songImage'       => wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0],
           'artist'           => wc_get_product_terms($id, 'pa_artist', array('fields' => 'names'))[0],
           'length'           => wc_get_product_terms($id, 'pa_duration', array('fields' => 'names'))[0],
           'genre'            => wc_get_product_terms($id, 'pa_genre', array('fields' => 'names'))[0],
           'inst'             => wc_get_product_terms($id, 'pa_instrument', array('fields' => 'names')),
           'mood'             => wc_get_product_terms($id, 'pa_mood', array('fields' => 'names')),
           'tempo'            => wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'))[0],
-          'preview_song_url' => get_field('preview_song_file', $id),
+          'previewSongUrl' => get_field('preview_song_file', $id),
+          'downloads'        => $downloads,
+          'membershipAccess' => pmpro_has_membership_access($id, null, false),
+          'variation' => $variation,
+          'variationId' => $variation_id,
         );
       endforeach;
 

@@ -58,3 +58,10 @@ function get_html_class($class = '') {
 function html_class($class = '') {
   echo 'class="' . esc_attr( implode( ' ', get_html_class($class) ) ) . '"';
 }
+
+/**
+ * Get site's Monetization Model
+ */
+function get_monetization_model() {
+  return get_field('ml_monetization_model', 'option');
+}

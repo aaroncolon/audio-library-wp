@@ -47,6 +47,7 @@ class Utilities {
       }
     })
     .done(function(data, textStatus, jqXHR) {
+      console.log('getPosts', data);
       events.trigger('getPostsDone', data, _page, append);
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
@@ -65,6 +66,51 @@ class Utilities {
    */
   isUserLoggedIn() {
     return (ml_js_data.user_logged_in) ? true : false;
+  }
+
+  /**
+   * Gets current site monetization model
+   *
+   * @return {String}
+   */
+  getMonetizationModel() {
+    return ml_js_data.monetization_model;
+  }
+
+  /**
+   * Gets current user's membership data
+   *
+   * @return {Object|null}
+   */
+  getMembershipData() {
+    if (this.getMonetizationModel() !== 'membership') {
+      return null;
+    }
+    return ml_js_data.membership_data;
+  }
+
+  /**
+   * Gets current user's membership level ID
+   *
+   * @return {String|null}
+   */
+  getMembershipLevel() {
+    if (this.getMembershipData() === null) {
+      return null;
+    }
+    return this.getMembershipData().id;
+  }
+
+  /**
+   * Gets current user's membership level name
+   *
+   * @return {String|null}
+   */
+   getMembershipLevelName() {
+    if (this.getMembershipData() === null) {
+      return null;
+    }
+    return this.getMembershipData().name;
   }
 
   /**

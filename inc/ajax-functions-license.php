@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Get Product Variations
+ */
 function ml_get_product_variations_handler() {
   check_ajax_referer('ml_get_product_nonce', 'nonce');
 
@@ -60,8 +62,9 @@ function ml_get_product_variations_handler() {
 add_action('wp_ajax_ml_get_product_variations', 'ml_get_product_variations_handler');
 add_action('wp_ajax_nopriv_ml_get_product_variations', 'ml_get_product_variations_handler');
 
-
-
+/**
+ * Add Variation To Cart
+ */
 function ml_add_to_cart_variation_hanlder() {
   check_ajax_referer('ml_add_to_cart_variation_nonce', 'nonce');
 

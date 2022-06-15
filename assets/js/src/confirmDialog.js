@@ -45,7 +45,9 @@ const confirmDialog = (function() {
   function openConfirmDialog(e) {
     const url   = e.target.dataset.redirectUrl,
           title = e.target.dataset.dialogTitle,
-          desc  = e.target.dataset.dialogDescription;
+          desc  = e.target.dataset.dialogDescription,
+          accept = e.target.dataset.dialogAccept,
+          reject = e.target.dataset.dialogReject;
 
     $btnConfirmDialogAccept.attr('data-redirect-url', url);
 
@@ -55,6 +57,14 @@ const confirmDialog = (function() {
 
     if (desc) {
       $confirmDialogDesc.text(desc);
+    }
+
+    if (accept) {
+      $btnConfirmDialogAccept.text(accept);
+    }
+
+    if (reject) {
+      $btnConfirmDialogReject.text(reject);
     }
 
     // Open confirmation dialog

@@ -1,4 +1,7 @@
 <?php
+/* Restore Default Custom Fields Panel */
+add_filter('acf/settings/remove_wp_meta_box', '__return_false', 20);
+
 /* Dynamically Populate Select Field with WooCommerce Products (songs) */
 function ml_acf_load_song_field_choices($field) {
   // reset choices

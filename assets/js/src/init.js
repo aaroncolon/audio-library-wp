@@ -7,6 +7,7 @@ import musicListFilters from './musicListFilters.js';
 import licenseDialog from './licenseDialog.js';
 import popupPlayer from './popupPlayer.js';
 import collections from './collections.js';
+import downloadDialog from './downloadDialog.js';
 
 // Init
 export default (function() {
@@ -16,6 +17,7 @@ export default (function() {
   musicList.init();
   musicListFilters.init();
   licenseDialog.init();
+  downloadDialog.init();
   popupPlayer.init();
   collections.init();
 })()

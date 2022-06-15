@@ -204,9 +204,9 @@ const musicListFilters = (function() {
 
     if (data.length) {
       for (let i = 0; i < data.length; i++) {
-        const blob = utils.createBlob(data[i].preview_song_url, '');
+        const blob = utils.createBlob(data[i].previewSongUrl, '');
 
-        data[i].preview_song_url = blob;
+        data[i].previewSongUrl = blob;
 
         // check if item is current_song_id and is playing
         data[i].isCurrentSongPlaying = (utils.isCurrentSong(data[i].id) && utils.isCurrentSongPlaying()) ? true : false;
@@ -216,6 +216,10 @@ const musicListFilters = (function() {
 
         // check if user is logged in
         data[i].isUserLoggedIn = utils.isUserLoggedIn();
+
+        data[i].monetizationModel = utils.getMonetizationModel();
+
+        data[i].membershipLevel = utils.getMembershipLevel();
 
         // pass the data to the template function
         $musicListTable.append( fnMusicListRow_(data[i]) );

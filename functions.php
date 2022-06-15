@@ -100,9 +100,12 @@ function ml_enqueue_scripts() {
 		'default_image'						 => ml_player_default_image(),
 		'user_logged_in'           => is_user_logged_in(),
 		'page_template_slug'       => get_page_template_slug(),
-		'customer_type_individual' => true) // enable Individual Customer Type handling
+		'customer_type_individual' => get_field('ml_individual_customer_type', 'option'),
+		'monetization_model'       => get_field('ml_monetization_model', 'option'),
+		'membership_data'					 => (get_field('ml_monetization_model', 'option') === 'membership' && pmpro_getMembershipLevelForUser(get_current_user_id())) ? pmpro_getMembershipLevelForUser(get_current_user_id()) : null,
+		'user_id'									 => get_current_user_id(),
+		)
 	);
-
 }
 add_action( 'wp_enqueue_scripts', 'ml_enqueue_scripts', 20 );
 
@@ -114,6 +117,8 @@ function ml_do_nonce($nonceName = '') {
 		'create_favorite'       => wp_create_nonce('ml_create_favorite_nonce'),
 		'delete_favorite'       => wp_create_nonce('ml_delete_favorite_nonce'),
 		'add_to_cart_variation' => wp_create_nonce('ml_add_to_cart_variation_nonce'),
+		'get_download_files'		=> wp_create_nonce('ml_get_download_files'),
+		'download_file'					=> wp_create_nonce('ml_download_file'),
 	);
 	return ($nonceName && $nonces[$nonceName]) ? $nonces[$nonceName] : $nonces;
 }
@@ -260,7 +265,19 @@ if ( class_exists('woocommerce') ) {
 	require 'inc/ajax-functions-share.php';
 }
 
-/* Advanced Custom Fields */
+/**
+ * Paid Memberships Pro includes
+ */
+if ( defined( 'PMPRO_VERSION' ) ) {
+	// require 'inc/aws-s3.php';
+	require 'inc/pmpro-functions.php';
+	require 'inc/ajax-functions-download.php';
+	require 'inc/downloads.php';
+}
+
+/**
+ * Advanced Custom Fields 
+ */
 require 'inc/acf-functions.php';
 
 // // Add Sign Up or Log In button to content-single-product.php

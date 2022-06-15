@@ -1,0 +1,92 @@
+.download-dialog {
+  background: #fff;
+  padding: 40px;
+  position: relative;
+  margin: 0 auto;
+  max-width: 750px;
+  width: 100%;
+}
+
+.download-dialog .mfp-close {
+  color: #333;
+}
+
+.download-dialog__song-details {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.download-dialog__song-image {
+  width: 80px;
+}
+
+.download-dialog__song-text {
+  margin-left: 15px;
+}
+
+.download-dialog__song-link {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+.download-dialog__song-link:after {
+  background-color: #fff;
+  bottom: 10px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  border-radius: 50%;
+  color: #000;
+  content: '\f04b';
+  font-family: 'Font Awesome 5 Free';
+  font-size: 16px;
+  display: inline-block;
+  left: 10px;
+  line-height: 25px;
+  padding: 5px 4px 5px 6px;
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  width: 25px;
+}
+
+.download-dialog__song-title {
+  font-weight: 700;
+}
+
+.download-dialog__song-artist {
+  font-size: 0.875em;
+  text-transform: uppercase;
+}
+
+.download-form__summary {
+  // border-top: 1px solid #ccc;
+  margin-top: 20px;
+  // padding-top: 20px;
+}
+
+.download-files--loading:before {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+  color: #333;
+  content: '\f1ce';
+  display: block;
+  font-family: 'Font Awesome 5 Free';
+  font-size: 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.download-form .btn--download {
+  display: block;
+  font-weight: 400;
+  text-align: center;
+  width: 100%;
+}

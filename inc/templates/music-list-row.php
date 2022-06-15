@@ -10,10 +10,11 @@
               class="btn music-list__btn-play-pause"
             <# } #>
             data-song-id="{{ data.id }}"
-            data-song-url="{{{ data.preview_song_url }}}"
+            data-song-variation-id="{{ data.variationId }}"
+            data-song-url="{{{ data.previewSongUrl }}}"
             data-song-title="{{ data.title }}"
             data-song-artist="{{ data.artist }}"
-            data-song-image="{{{ data.song_image }}}"
+            data-song-image="{{{ data.songImage }}}"
           >
               <span class="visuallyhidden">Play</span>
           </button>
@@ -55,7 +56,7 @@
         data-song-id="{{ data.id }}"
         data-song-title="{{ data.title }}"
         data-song-artist="{{ data.artist }}"
-        data-song-image="{{{ data.song_image }}}"
+        data-song-image="{{{ data.songImage }}}"
         <# if ( ! data.isUserLoggedIn ) { #>
           data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), wc_get_page_permalink('myaccount')) ) ?>"
           data-dialog-title="<?php esc_attr_e( 'Add to Favorites' ) ?>"
@@ -67,22 +68,49 @@
       </button>
       <button
         type="button"
-        class="music-list__btn btn btn--license"
+        <# if ( data.monetizationModel === 'licensing' ) { #>
+          class="music-list__btn btn btn--license"
+        <# } else if ( data.monetizationModel === 'membership' && data.membershipAccess ) { #>
+          class="music-list__btn btn btn--download"
+        <# } else if ( data.monetizationModel === 'membership' && !data.membershipAccess ) { #>
+          class="music-list__btn btn btn--upgrade"
+        <# } #>
         data-song-id="{{ data.id }}"
+        data-song-variation-id="{{ data.variationId }}"
         data-song-title="{{ data.title }}"
         data-song-artist="{{ data.artist }}"
-        data-song-image="{{{ data.song_image }}}"
-        data-song-url="{{{ data.preview_song_url }}}"
-        <# if ( ! data.isUserLoggedIn ) { #>
+        data-song-image="{{{ data.songImage }}}"
+        data-song-url="{{{ data.previewSongUrl }}}"
+        <# if ( ! data.isUserLoggedIn && data.monetizationModel === 'licensing' ) { #>
           data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), wc_get_page_permalink('myaccount')) ) ?>"
           data-dialog-title="<?php esc_attr_e( 'Purchase' ) ?>"
           data-dialog-description="<?php esc_attr_e( 'Sign in or create an account to purchase this item.' ) ?>"
           data-mfp-src="#confirm-dialog"
-        <# } else { #>
+        <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'licensing' ) { #>
           data-mfp-src="#license-dialog"
+        <# } else if ( ! data.isUserLoggedIn && data.monetizationModel === 'membership' ) { #>
+          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('login')) ) ?>"
+          data-dialog-title="<?php esc_attr_e( 'Download' ) ?>"
+          data-dialog-description="<?php esc_attr_e( 'Log In to download this item.' ) ?>"
+          data-dialog-accept="Log In"
+          data-mfp-src="#confirm-dialog"
+        <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'membership' && data.membershipAccess) { #>
+          data-mfp-src="#download-dialog"
+        <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'membership' && !data.membershipAccess ) { #>
+          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('levels')) ) ?>"
+          data-dialog-title="<?php esc_attr_e( 'Upgrade' ) ?>"
+          data-dialog-description="<?php esc_attr_e( 'Upgrade your membership level to download this item.' ) ?>"
+          data-dialog-accept="Upgrade"
+          data-mfp-src="#confirm-dialog"
         <# } #>
       >
-        License
+        <# if (data.monetizationModel === 'licensing') { #>
+          License
+        <# } else if (data.monetizationModel === 'membership' && (!data.isUserLoggedIn || data.membershipAccess)) { #>
+          Download
+        <# } else if (data.monetizationModel === 'membership' && !data.membershipAccess) { #>
+          Upgrade
+        <# } #>
       </button>
     </div>
   </div>

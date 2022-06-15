@@ -10,6 +10,8 @@ const musicList = (function() {
         CLASS_BTN_FAVORITE           = 'btn--favorite',
         CLASS_BTN_IS_FAVORITE        = 'btn--is-favorite',
         CLASS_BTN_LICENSE            = 'btn--license',
+        CLASS_BTN_DOWNLOAD           = 'btn--download',
+        CLASS_BTN_UPGRADE            = 'btn--upgrade',
         CLASS_BTN_PLAY_PAUSE         = 'music-list__btn-play-pause',
         CLASS_BTN_PLAY_PAUSE_LOADING = 'music-list__btn-play-pause--loading',
         CLASS_BTN_PLAY_PAUSE_PLAYING = 'music-list__btn-play-pause--playing';
@@ -38,11 +40,14 @@ const musicList = (function() {
     $musicListTable.on('click', '.' + CLASS_BTN_PLAY_PAUSE, handleClickPlayPause);
     $musicListTable.on('click', '.' + CLASS_BTN_FAVORITE, handleClickFavorite);
     $musicListTable.on('click', '.' + CLASS_BTN_LICENSE, handleClickLicense);
+    $musicListTable.on('click', '.' + CLASS_BTN_DOWNLOAD, handleClickDownload);
+    $musicListTable.on('click', '.' + CLASS_BTN_UPGRADE, handleClickUpgrade);
 
     events.on('songStateChange', handleSongStateChange, this);
     events.on('createFavoriteSuccess', handleCreateFavoriteSuccess, this);
     events.on('deleteFavoriteSuccess', handleDeleteFavoriteSuccess, this);
     events.on('closeLicenseDialog', handleCloseLicenseDialog, this);
+    events.on('closeDownloadDialog', handleCloseDownloadDialog, this);
   }
 
   function handleClickPlayPause(e) {
@@ -106,6 +111,68 @@ const musicList = (function() {
         }
       }
     }).magnificPopup('open');
+  }
+
+  /**
+   * Handle Download Button Click
+   * 
+   * @param {Object} e event object
+   * @returns 
+   */
+  function handleClickDownload(e) {
+    e.preventDefault();
+    
+    if (e.currentTarget.dataset.redirectUrl) {
+      events.trigger('openConfirmDialog', e);
+      return;
+    }
+
+    this.disabled = true;
+
+    // get product data for download dialog
+    const data = {
+      'artist'      : this.dataset.songArtist,
+      'id'          : this.dataset.songId, // ID used for Simple Product
+      'variationId' : this.dataset.songVariationId, // vID used for Variable Product
+      'image'       : this.dataset.songImage,
+      'title'       : this.dataset.songTitle,
+      'url'         : this.dataset.songUrl
+    };
+    // set product data for Download Dialog
+    events.trigger('clickDownload', data);
+
+    // init Magnific Popup
+    jQuery(this).magnificPopup({
+      // alignTop: true,
+      type: 'inline',
+      mainClass: 'mfp-download-popup mfp-fade',
+      closeOnBgClick: true,
+      removalDelay: 300,
+      closeMarkup: '<button title="%title%" type="button" class="mfp-close">&times;</button>',
+      callbacks: {
+        open: function() {
+          events.trigger('mfpOpenDownloadDialog');
+        },
+        close: function() {
+          events.trigger('mfpCloseDownloadDialog');
+        }
+      }
+    }).magnificPopup('open');
+  }
+
+  /**
+   * Handle Upgrade Button Click
+   * 
+   * @param {Object} e event object
+   * @returns 
+   */
+   function handleClickUpgrade(e) {
+    e.preventDefault();
+    
+    if (e.currentTarget.dataset.redirectUrl) {
+      events.trigger('openConfirmDialog', e);
+      return;
+    }
   }
 
   function handleSongStateChange(id, state) {
@@ -197,6 +264,18 @@ const musicList = (function() {
     }
 
     $btnLicense.removeAttr('disabled');
+  }
+
+  function handleCloseDownloadDialog(id) {
+    utils.closeMagnificPopup();
+
+    let $btnDownload = $musicListTable.find('button[data-song-id='+ id +'].btn--download');
+
+    if (! $btnDownload.length) {
+      return;
+    }
+
+    $btnDownload.removeAttr('disabled');
   }
 
   return {
