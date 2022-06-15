@@ -288,18 +288,38 @@ function ml_wc_login_form_redirect() {
 
 add_action('woocommerce_register_form', 'ml_wc_register_form_redirect');
 function ml_wc_register_form_redirect() {
-  if ( empty($_GET['redirect']) ) {
-    return;
-  }
+	if ( empty($_GET['redirect']) ) {
+		return;
+	}
 
-  $query_url = filter_input(INPUT_GET, 'redirect', FILTER_SANITIZE_URL);
-  $query_url = ($query_url) ? rawurldecode($query_url) : null;
+	$query_url = filter_input(INPUT_GET, 'redirect', FILTER_SANITIZE_URL);
+	$query_url = ($query_url) ? rawurldecode($query_url) : null;
 
-  if ($query_url) {
-    echo '<input type="hidden" name="redirect" id="redirect" value="'. esc_url($query_url) .'">';
-  }
+	if ($query_url) {
+		echo '<input type="hidden" name="redirect" id="redirect" value="'. esc_url($query_url) .'">';
+	}
 }
 
+/**
+ * WooCommerce change continue shopping URL
+ */
+function ml_continue_shopping_redirect( $url ) {
+	return get_permalink(get_page_id_by_template('template-audio-library.php')[0]);
+}
+add_filter( 'woocommerce_continue_shopping_redirect', 'ml_continue_shopping_redirect' );
+
+/**
+ * WooCommerce change return to shop URL
+ */
+function ml_return_to_shop_redirect( $wc_get_page_permalink ) {
+	return get_permalink(get_page_id_by_template('template-audio-library.php')[0]);
+}
+add_filter( 'woocommerce_return_to_shop_redirect', 'ml_return_to_shop_redirect' );
+
+/**
+ * Default song data
+ * @return array default song data
+ */
 function ml_player_default_song() {
 	$id = get_field('ml_default_song', 'option');
 
@@ -327,6 +347,10 @@ function ml_player_default_song() {
 	);
 }
 
+/**
+ * Default image data
+ * @return string default image url
+ */
 function ml_player_default_image() {
 	$image = get_field('ml_default_image', 'option');
 	return $image['url'];
