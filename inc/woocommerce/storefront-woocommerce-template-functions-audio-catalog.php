@@ -115,7 +115,10 @@ function storefront_audio_library_list() {
     data-nonce-products="<?php echo esc_attr(ml_do_nonce('get_products')) ?>"
     data-nonce-favorites="<?php echo esc_attr(ml_do_nonce('get_favorites')) ?>"
     data-nonce-create-favorite="<?php echo esc_attr(ml_do_nonce('create_favorite')) ?>"
-    data-nonce-delete-favorite="<?php echo esc_attr(ml_do_nonce('delete_favorite')) ?>">
+    data-nonce-delete-favorite="<?php echo esc_attr(ml_do_nonce('delete_favorite')) ?>"
+    <?php if (get_field('ml_monetization_model', 'options') === 'membership') : ?>
+    data-nonce-get-user-downloads="<?php echo esc_attr(ml_do_nonce('get_user_downloads')) ?>"
+    <?php endif; ?>>
     <div id="music-list__table">
       <div class="music-list__body"></div>
     </div>

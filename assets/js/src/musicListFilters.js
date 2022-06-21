@@ -1,6 +1,7 @@
 import events from './Events.js';
 import utils from './Utilities.js';
 import favorites from './Favorites.js';
+import userDownloads from './UserDownloads';
 
 const musicListFilters = (function() {
 
@@ -18,6 +19,7 @@ const musicListFilters = (function() {
       $btnLoadMore,
       $nonceProducts,
       $nonceFavorites,
+      $nonceGetDownloads,
       fnMusicListRow_,
       fnMusicListRowError_;
 
@@ -31,6 +33,7 @@ const musicListFilters = (function() {
   function init() {
     if (!cacheDom()) { return }
 
+    // Use prerendered song list if on Collection page
     if (window.location.pathname.indexOf('collections') !== -1) {
       prerender = true;
     }
@@ -38,20 +41,23 @@ const musicListFilters = (function() {
     if (prerender) {
       bindEvents();
       getFavorites();
+      getUserDownloads();
     } else {
       $musicList.toggleClass(CLASS_LOADING);
       bindEvents();
       getFavorites();
+      getUserDownloads();
     }
   }
 
   function cacheDom() {
-    $formFilters    = jQuery('#' + FORM_FILTERS_ID);
-    $musicList      = jQuery('#' + MUSIC_LIST_ID);
-    $musicListTable = $musicList.find('.' + MUSIC_LIST_BODY);
-    $btnLoadMore    = $musicList.find('.' + BTN_LOAD_MORE);
-    $nonceProducts  = $musicList.attr('data-nonce-products');
-    $nonceFavorites = $musicList.attr('data-nonce-favorites');
+    $formFilters       = jQuery('#' + FORM_FILTERS_ID);
+    $musicList         = jQuery('#' + MUSIC_LIST_ID);
+    $musicListTable    = $musicList.find('.' + MUSIC_LIST_BODY);
+    $btnLoadMore       = $musicList.find('.' + BTN_LOAD_MORE);
+    $nonceProducts     = $musicList.attr('data-nonce-products');
+    $nonceFavorites    = $musicList.attr('data-nonce-favorites');
+    $nonceGetDownloads = $musicList.attr('data-nonce-get-user-downloads');
 
     // js templates
     fnMusicListRow_      = wp.template('music-list-row');
@@ -76,6 +82,21 @@ const musicListFilters = (function() {
       handleGetFavorites();
     } else {
       favorites.getFavorites($nonceFavorites);
+    }
+  }
+  
+  /**
+   * Get user's downloaded songs
+   */
+  function getUserDownloads() {
+    if (ml_js_data.monetization_model !== 'membership') {
+      return;
+    }
+
+    if (! ml_js_data.user_logged_in) {
+      ml_js_data.user_downloads = [];
+    } else {
+      userDownloads.getDownloads($nonceGetDownloads);
     }
   }
 
@@ -105,7 +126,8 @@ const musicListFilters = (function() {
     // prerender == true if on server-side rendered Music List
     if (prerender) {
       console.log('prerendered, returning', prerender);
-      return; }
+      return; 
+    }
 
     // Parse query string and set filters
     if (window.location.search) {

@@ -114,6 +114,8 @@ function ml_do_nonce($nonceName = '') {
 		'get_products'          => wp_create_nonce('ml_get_products_nonce'),
 		'get_product'           => wp_create_nonce('ml_get_product_nonce'),
 		'get_favorites'         => wp_create_nonce('ml_get_favorites_nonce'),
+		'get_user_downloads'		=> wp_create_nonce('ml_get_user_downloads_nonce'),
+		'create_user_download'	=> wp_create_nonce('ml_create_user_download_nonce'),
 		'create_favorite'       => wp_create_nonce('ml_create_favorite_nonce'),
 		'delete_favorite'       => wp_create_nonce('ml_delete_favorite_nonce'),
 		'add_to_cart_variation' => wp_create_nonce('ml_add_to_cart_variation_nonce'),
@@ -272,6 +274,8 @@ if ( defined( 'PMPRO_VERSION' ) ) {
 	// require 'inc/aws-s3.php';
 	require 'inc/pmpro-functions.php';
 	require 'inc/ajax-functions-download.php';
+	require 'inc/ajax-functions-user-downloads.php';
+	require 'inc/user-downloads.php';
 	require 'inc/downloads.php';
 }
 

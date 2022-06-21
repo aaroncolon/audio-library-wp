@@ -1,5 +1,6 @@
 import events from './Events.js';
 import utils from './Utilities.js';
+import userDownloads from './UserDownloads.js';
 
 const downloadDialog = (function() {
 
@@ -50,7 +51,7 @@ const downloadDialog = (function() {
 
   function bindEvents() {
     $songLink.on('click', handleClickSongLink);
-    // $btnDownload.on('click', handleDownloadFile);
+    // $btnDownload.on('click', handleBtnDownload);
 
     events.on('clickDownload', handleDownloadClick, this);
     events.on('getDownloadFilesDone', handleGetDownloadFilesDone, this);

@@ -51,13 +51,11 @@ function ml_download_product() {
     download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
   }
 
+  // Track Download
+  ml_track_download($product_id, $user_id);
+
   $_file_path = $download_file;
   $_filename = basename($download_file);
-
-  // if ( is_ssl() && ! empty( $GLOBALS['is_IE'] ) ) {
-  //   $headers['Cache-Control'] = 'private';
-  //   unset( $headers['Pragma'] );
-  // }
 
   download_file_xsendfile($_file_path, $_filename);
 }
