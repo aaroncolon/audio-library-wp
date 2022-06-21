@@ -11,70 +11,45 @@ function ml_download_product() {
     download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
   }
 
-  $product_id = absint(sanitize_text_field($_GET['pid']));
+  $product_id        = absint($_GET['download_file']);
+  $parent_product_id = absint($_GET['pid']);
 
-  if ( ! pmpro_has_membership_access($product_id) ) {
+  // PMPro Membership Access is set on parent product
+  if ( ! pmpro_has_membership_access($parent_product_id) ) {
     download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
   }
 
   // get Download data
   $downloads = array();
   $product = wc_get_product($product_id);
+  $key = empty( $_GET['key'] ) ? '' : sanitize_text_field( wp_unslash( $_GET['key'] ) );
 
-  if ($product->is_type('variable')) :
+  foreach ($product->get_downloads() as $k => $download) :
+    $download_name = $download->get_name(); // File label name
+    $download_file = $download->get_file(); // File Url
+    $download_id   = $download->get_id(); // File Id (same as $key)
+    $download_type = $download->get_file_type(); // File type
+    $download_ext  = $download->get_file_extension(); // File extension
+    // $file_path = parse_url($download_file, PHP_URL_PATH);
+    // $file_path2 = $_SERVER['DOCUMENT_ROOT'] . $file_path;
 
-    // use downloads from first variation
-    $variations = $product->get_available_variations();
-    $variation = wc_get_product($variations[0]['variation_id']);
-    $variation_id = $variation->get_id();
-    $variation_dls = $variation->get_downloads();
-    
-    foreach ($variation_dls as $key => $download) :
-      $download_data = $download->get_data();
-      $download_name = $download->get_name(); // File label name
-      $download_file = $download->get_file(); // File Url
-      $download_id   = $download->get_id(); // File Id (same as $key)
-      $download_type = $download->get_file_type(); // File type
-      $download_ext  = $download->get_file_extension(); // File extension
+    $downloads[$k] = array(
+      'key'  => $k,
+      'name' => $download_name,
+      'file' => $download_file,
+      'type' => $download_type,
+      // 'path' => $file_path2,
+      // 'basename' => basename($file_path2),
+    );
+  endforeach;
 
-      $file_path = parse_url($download_file, PHP_URL_PATH);
-      $file_path = $_SERVER['DOCUMENT_ROOT'] . $file_path;
-
-      $downloads[] = array(
-        // 'data' => $download_data,
-        'key'  => $key,
-        'name' => $download_name,
-        'file' => $download_file,
-        'type' => $download_type,
-        'path' => $file_path,
-        'file_exists' => file_exists($file_path),
-        'file_size' => filesize($file_path),
-        'basename' => basename($file_path),
-      );
-    endforeach;
-  
-  elseif ($product->is_type('simple')) :
-  
-    foreach ($product->get_downloads() as $key => $download) :
-      $download_name = $download->get_name(); // File label name
-      $download_file = $download->get_file(); // File Url
-      $download_id   = $download->get_id(); // File Id (same as $key)
-      $download_type = $download->get_file_type(); // File type
-      $download_ext  = $download->get_file_extension(); // File extension
-      $file_path = parse_url($download_file, PHP_URL_PATH);
-      $file_path2 = $_SERVER['DOCUMENT_ROOT'] . $file_path;
-
-      $downloads[] = array(
-        'key'  => $key,
-        'name' => $download_name,
-        'file' => $download_file,
-        'type' => $download_type,
-        'path' => $file_path2,
-        'basename' => basename($file_path2),
-      );
-    endforeach;
-  
-  endif;
+  if (
+    ! $product
+    || empty( $key )
+    || ! isset( $downloads[$key] )
+  ) {
+    download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
+  }
 
   $_file_path = $download_file;
   $_filename = basename($download_file);

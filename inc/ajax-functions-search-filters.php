@@ -14,6 +14,7 @@ function ml_get_posts_handler() {
   $filter_args        = array();
   $tax_query          = array();
   $tax_query_merged   = array();
+  $monetization_model = get_field('ml_monetization_model', 'option');
 
   $tax_query = array(
     'relation' => 'AND',
@@ -83,6 +84,9 @@ function ml_get_posts_handler() {
 
   if (!empty($transient)) :
 
+    if ($monetization_model === 'membership') :
+      $transient = ml_get_product_membership_access($transient);
+    endif;
     wp_send_json_success($transient);
 
   else :
@@ -158,20 +162,20 @@ function ml_get_posts_handler() {
         endif;
 
         $result['products'][] = array(
-          'id'               => $id,
-          'title'            => get_the_title($id),
-          'songImage'       => wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0],
-          'artist'           => wc_get_product_terms($id, 'pa_artist', array('fields' => 'names'))[0],
-          'length'           => wc_get_product_terms($id, 'pa_duration', array('fields' => 'names'))[0],
-          'genre'            => wc_get_product_terms($id, 'pa_genre', array('fields' => 'names'))[0],
-          'inst'             => wc_get_product_terms($id, 'pa_instrument', array('fields' => 'names')),
-          'mood'             => wc_get_product_terms($id, 'pa_mood', array('fields' => 'names')),
-          'tempo'            => wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'))[0],
+          'id'             => $id,
+          'title'          => get_the_title($id),
+          'songImage'      => wp_get_attachment_image_src(get_post_thumbnail_id($id), 'full')[0],
+          'artist'         => wc_get_product_terms($id, 'pa_artist', array('fields' => 'names'))[0],
+          'length'         => wc_get_product_terms($id, 'pa_duration', array('fields' => 'names'))[0],
+          'genre'          => wc_get_product_terms($id, 'pa_genre', array('fields' => 'names'))[0],
+          'inst'           => wc_get_product_terms($id, 'pa_instrument', array('fields' => 'names')),
+          'mood'           => wc_get_product_terms($id, 'pa_mood', array('fields' => 'names')),
+          'tempo'          => wc_get_product_terms($id, 'pa_tempo', array('fields' => 'names'))[0],
           'previewSongUrl' => get_field('preview_song_file', $id),
-          'downloads'        => $downloads,
-          'membershipAccess' => pmpro_has_membership_access($id, null, false),
-          'variation' => $variation,
-          'variationId' => $variation_id,
+          'downloads'      => $downloads,
+          'variation'      => $variation,
+          'variationId'    => $variation_id,
+          'key'            => $downloads[0]['key']
         );
       endforeach;
 
@@ -192,9 +196,28 @@ function ml_get_posts_handler() {
 
     set_transient('ml_get_posts_' . md5( json_encode($args) ), $result, HOUR_IN_SECONDS);
 
+    // get product membership data
+    if ($monetization_model === 'membership') :
+      $result = ml_get_product_membership_access($result);
+    endif;
+
     wp_send_json_success($result);
 
   endif;
 }
 add_action('wp_ajax_ml_get_posts', 'ml_get_posts_handler');
 add_action('wp_ajax_nopriv_ml_get_posts', 'ml_get_posts_handler');
+
+/**
+ * Adds `membershipAccess` key => value to product query if using Membership monetization model
+ * Allows main query to be cached while keeping `membershipAccess` dynamic per user
+ * 
+ * @param Array $products the product data
+ */
+function ml_get_product_membership_access($products) {
+  foreach ($products['products'] as &$value) :
+    $value['membershipAccess'] = pmpro_has_membership_access($value['id'], null, false);
+  endforeach;
+
+  return $products;
+}

@@ -96,6 +96,7 @@
           data-mfp-src="#confirm-dialog"
         <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'membership' && data.membershipAccess) { #>
           data-mfp-src="#download-dialog"
+          data-song-key="{{ data.key }}"
         <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'membership' && !data.membershipAccess ) { #>
           data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('levels')) ) ?>"
           data-dialog-title="<?php esc_attr_e( 'Upgrade' ) ?>"

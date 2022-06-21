@@ -136,7 +136,8 @@ const musicList = (function() {
       'variationId' : this.dataset.songVariationId, // vID used for Variable Product
       'image'       : this.dataset.songImage,
       'title'       : this.dataset.songTitle,
-      'url'         : this.dataset.songUrl
+      'url'         : this.dataset.songUrl,
+      'key'         : this.dataset.songKey
     };
     // set product data for Download Dialog
     events.trigger('clickDownload', data);

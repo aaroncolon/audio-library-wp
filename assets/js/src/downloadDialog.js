@@ -73,9 +73,9 @@ const downloadDialog = (function() {
 
     // use Product Variation ID if present
     if (data.variationId) {
-      getDownloadFiles(data.variationId, data.id);
+      getDownloadFiles(data.variationId, data.id, data.key);
     } else {
-      getDownloadFiles(data.id, data.id);
+      getDownloadFiles(data.id, data.id, data.key);
     }
 
     utils.setState({
@@ -93,10 +93,11 @@ const downloadDialog = (function() {
   /**
    * Get Product Download URL
    * 
-   * @param {String} product_id the Product ID or Variation ID
-   * @param {String} parent_id the Product ID or Parent Product ID if using Variable Products
+   * @param {String} product_id Product ID || Variation ID
+   * @param {String} parent_id Product ID || Parent Product ID if using Variable Products
+   * @param {String} key the download file's unique key
    */
-  function getDownloadFiles(product_id, parent_id) {
+  function getDownloadFiles(product_id, parent_id, key) {
     console.log('getDownloadFiles');
 
     jQuery.ajax({
@@ -106,7 +107,8 @@ const downloadDialog = (function() {
       data     : {
         'action' : 'ml_get_download_files',
         'id'     : product_id,
-        'pid'    : parent_id,
+        'pid'    : parent_id, // pid is used to determine PMPro Membership Access
+        'key'    : key,
         'nonce'  : $nonceGetDownloadFiles
       }
     })
