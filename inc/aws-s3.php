@@ -22,8 +22,8 @@ function ml_get_s3_presigned_request($filename = '') {
   ]);
   
   $cmd = $s3Client->getCommand('GetObject', [
-    'Bucket' => 'livedogdeadlion',
-    'Key' => 'Website__Inspired_Eyes-Slashedover_-SCR50341.mp3'
+    'Bucket' => '',
+    'Key' => ''
   ]);
   
   $request = $s3Client->createPresignedRequest($cmd, '+5 minutes');
