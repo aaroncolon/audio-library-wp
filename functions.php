@@ -250,6 +250,9 @@ function ml_storefront_credit_link( $show ) {
 }
 add_filter( 'storefront_credit_link', 'ml_storefront_credit_link', 10, 1 );
 
+/**
+ * WooCommerce includes
+ */
 if ( class_exists('woocommerce') ) {
 	require 'inc/favorites.php';
 	require 'inc/woocommerce/storefront-woocommerce-template-functions.php';
