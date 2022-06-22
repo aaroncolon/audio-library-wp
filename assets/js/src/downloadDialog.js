@@ -51,7 +51,6 @@ const downloadDialog = (function() {
 
   function bindEvents() {
     $songLink.on('click', handleClickSongLink);
-    // $btnDownload.on('click', handleBtnDownload);
 
     events.on('clickDownload', handleDownloadClick, this);
     events.on('getDownloadFilesDone', handleGetDownloadFilesDone, this);
@@ -133,77 +132,6 @@ const downloadDialog = (function() {
     $btnDownload.get(0).href = data.data.d_url;
     $btnDownload.toggleClass('disabled');
     $downloadFiles.toggleClass(CLASS_DOWNLOAD_FILES_LOAD);
-
-    // var file = data.data.download_urls[0].file;
-    // console.log('file', file);
-
-    // var blob = new Blob(file, { type: 'audio/mpeg' });
-    // var url = URL.createObjectURL(blob);
-
-    // console.log('url', url);
-
-    // fetch(url)
-    //   .then(res => res.blob())
-    //   .then(blob2 => {
-    //     console.log('blob2', blob2);
-    //     var url2 = URL.createObjectURL(blob2);
-    //     var a = document.createElement('a');
-    //     // a.style.display = 'none';
-    //     a.href = url2;
-    //     console.log('url2', url2);
-    //     a.download = data.data.download_urls[0].name;
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     URL.revokeObjectURL(url2);
-    //   });
-
-    // var a = document.createElement('a');
-    // a.style.display = 'none';
-    // a.href = data.data.download_urls[0].file;
-    // a.download = data.data.download_urls[0].name;
-    // document.body.appendChild(a);
-    // console.log('a', a);
-    // a.click();
-    // URL.revokeObjectURL(url);
-    // reset();
-    // events.trigger('closeDownloadDialog', state.productId);
-
-    // window.location = data.data.download_urls[0].file;
-
-    // var xhr = new XMLHttpRequest();
-    // xhr.open('GET', file, true);
-    // xhr.responseType = 'blob';
-    // xhr.onload = function(e) {
-    //   if (this.status == 200) {
-    //     // Note: .response instead of .responseText
-    //     var blob = this.response;
-    //     var url = URL.createObjectURL(blob);
-
-    //     var a = document.createElement('a');
-    //     a.style.display = 'none';
-    //     a.download = 'lddl.mp3';
-    //     a.href = url;
-
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     URL.revokeObjectURL(url);
-    //   }
-    // }
-    // xhr.send();
-
-    // fetch(file)
-    //   .then(res => res.blob())
-    //   .then(blob => {
-    //     var url = URL.createObjectURL(blob);
-    //     var a = document.createElement('a');
-    //     a.style.display = 'none';
-    //     a.href = url;
-    //     a.download = data.data.download_urls[0].name;
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     URL.revokeObjectURL(url);
-    //   });
-
   }
 
   function handleCloseDialog() {
