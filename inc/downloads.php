@@ -5,9 +5,15 @@ if ( isset( $_GET['download_file'] ) && isset( $_GET['pid'] ) && isset( $_GET['e
 }
 
 function ml_download_product() {
-  $user_id = get_current_user_id();
+  if ( ! is_user_logged_in() ) { 
+    download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
+  }
 
-  if ( ! is_user_logged_in() || $user_id !== absint($_GET['email']) ) { 
+  $user       = wp_get_current_user();
+  $user_email = $user->user_email;
+  $user_id    = $user->ID;
+
+  if ( $user_email !== sanitize_email($_GET['email']) ) { 
     download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
   }
 

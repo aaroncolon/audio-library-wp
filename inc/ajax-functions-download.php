@@ -11,7 +11,10 @@ function ml_get_download_files_handler() {
   }
 
   $result = array();
-  $user_id = get_current_user_id();
+  $user = wp_get_current_user();
+  $user_email = $user->user_email;
+  $user_id = $user->ID;
+  $transient_ttl = HOUR_IN_SECONDS;
 
   $transient = get_transient('ml_get_download_files_'. md5( json_encode(array($id, $pid, $user_id)) ));
   if (! empty($transient)) :
@@ -20,23 +23,31 @@ function ml_get_download_files_handler() {
 
   else :
 
-    // S3 Presigned URL
-    // $result['surl'] = ml_get_s3_presigned_request();
+    if (get_field('ml_downloads_storage_type') === 'aws-s3') :
 
-    // Build Download URL
-    $d_url = add_query_arg(
-      array(
-        'download_file' => $id,
-        'pid'           => $pid, // pmpro_has_membership_access() uses Parent ID
-        'email'         => $user_id,
-        'key'           => $key
-      ),
-      home_url( '/' )
-    );
+      // Build S3 Presigned Request URL
+      $d_url = ml_get_s3_presigned_request();
 
-    $result['d_url'] = $d_url;
+      $transient_ttl = get_field('ml_aws_s3_presigned_req_ttl', 'options');
+    
+    else :
 
-    set_transient('ml_get_download_files'. md5( json_encode(array($id, $pid, $user_id)) ), $result, HOUR_IN_SECONDS);
+      // Build Download URL
+      $d_url = add_query_arg(
+        array(
+          'download_file' => $id,
+          'pid'           => $pid, // pmpro_has_membership_access() uses Parent ID
+          'email'         => $user_email,
+          'key'           => $key
+        ),
+        home_url( '/' )
+      );
+
+      $result['d_url'] = $d_url;
+    
+    endif;
+
+    set_transient('ml_get_download_files'. md5( json_encode(array($id, $pid, $user_id)) ), $result, $transient_ttl);
 
     wp_send_json_success($result);
 
