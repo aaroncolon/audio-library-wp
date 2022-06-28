@@ -1,0 +1,25 @@
+
+/*
+ * Login Page
+ */
+
+form.pmpro_form .input, 
+form.pmpro_form textarea, 
+form.pmpro_form select, 
+#loginform input[type=text], 
+#loginform input[type=password] {
+  max-width: none;
+}
+
+form.pmpro_form input[type=text].input, 
+form.pmpro_form input[type=password].input, 
+.pmpro_login_wrap form#loginform input[type=text].input, 
+.pmpro_login_wrap form#loginform input[type=password].input {
+  width: 100%;
+}
+
+form.pmpro_form .pmpro_btn, 
+.pmpro_login_wrap #loginform input[type=submit] {
+  display: block;
+  width: 100%;
+}
