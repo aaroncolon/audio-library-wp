@@ -19,194 +19,74 @@ class ML_Download_Handler {
 	 * Hook in methods.
 	 */
 	public static function init() {
-		if ( isset( $_GET['download_file'], $_GET['order'] ) && ( isset( $_GET['email'] ) || isset( $_GET['uid'] ) ) ) { // WPCS: input var ok, CSRF ok.
+		if ( isset( $_GET['download_file'] ) && isset( $_GET['pid'] ) && isset( $_GET['email'] ) ) { // WPCS: input var ok, CSRF ok.
 			add_action( 'init', array( __CLASS__, 'download_product' ) );
 		}
-		add_action( 'woocommerce_download_file_redirect', array( __CLASS__, 'download_file_redirect' ), 10, 2 );
-		add_action( 'woocommerce_download_file_xsendfile', array( __CLASS__, 'download_file_xsendfile' ), 10, 2 );
-		add_action( 'woocommerce_download_file_force', array( __CLASS__, 'download_file_force' ), 10, 2 );
+		add_action( 'ml_download_file_redirect', array( __CLASS__, 'download_file_redirect' ), 10, 2 );
+		add_action( 'ml_download_file_xsendfile', array( __CLASS__, 'download_file_xsendfile' ), 10, 2 );
+		add_action( 'ml_download_file_force', array( __CLASS__, 'download_file_force' ), 10, 2 );
 	}
 
 	/**
 	 * Check if we need to download a file and check validity.
 	 */
 	public static function download_product() {
+		if ( ! is_user_logged_in() ) {
+			self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
+		}
+
+		$user       = wp_get_current_user();
+		$user_email = $user->user_email;
+		$user_id    = $user->ID;
+
+		if ( $user_email !== sanitize_email($_GET['email']) ) { 
+			self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
+		}
+
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$product_id = absint( $_GET['download_file'] ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$parent_product_id = absint( $_GET['pid'] ); // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage.AccessDetected, WordPress.VIP.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+
+		// PMPro Membership Access is set on parent product
+		if ( ! pmpro_has_membership_access($parent_product_id) ) {
+			download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
+		}
+
+		// get Download data
 		$product    = wc_get_product( $product_id );
 		$downloads  = $product ? $product->get_downloads() : array();
-		$data_store = WC_Data_Store::load( 'customer-download' );
 
 		$key = empty( $_GET['key'] ) ? '' : sanitize_text_field( wp_unslash( $_GET['key'] ) );
+
+		foreach ($downloads as $k => $download) :
+			$download_name = $download->get_name(); // File label name
+			$download_file = $download->get_file(); // File Url
+			$download_id   = $download->get_id(); // File Id (same as $key)
+			$download_type = $download->get_file_type(); // File type
+			$download_ext  = $download->get_file_extension(); // File extension
+	
+			$downloads[$k] = array(
+				'key'  => $k,
+				'name' => $download_name,
+				'file' => $download_file,
+				'type' => $download_type,
+			);
+		endforeach;
 
 		if (
 			! $product
 			|| empty( $key )
-			|| empty( $_GET['order'] )
 			|| ! isset( $downloads[ $key ] )
-			|| ! $downloads[ $key ]->get_enabled()
 		) {
 			self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
 		}
 
-		// Fallback, accept email address if it's passed.
-		if ( empty( $_GET['email'] ) && empty( $_GET['uid'] ) ) { // WPCS: input var ok, CSRF ok.
-			self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		$file_path = $download_file;
 
-		$order_id = wc_get_order_id_by_order_key( wc_clean( wp_unslash( $_GET['order'] ) ) ); // WPCS: input var ok, CSRF ok.
-		$order    = wc_get_order( $order_id );
+		// Track Download
+		ml_track_download($product_id, $user_id);
 
-		if ( isset( $_GET['email'] ) ) { // WPCS: input var ok, CSRF ok.
-			$email_address = wp_unslash( $_GET['email'] ); // WPCS: input var ok, CSRF ok, sanitization ok.
-		} else {
-			// Get email address from order to verify hash.
-			$email_address = is_a( $order, 'WC_Order' ) ? $order->get_billing_email() : null;
-
-			// Prepare email address hash.
-			$email_hash = function_exists( 'hash' ) ? hash( 'sha256', $email_address ) : sha1( $email_address );
-
-			if ( is_null( $email_address ) || ! hash_equals( wp_unslash( $_GET['uid'] ), $email_hash ) ) { // WPCS: input var ok, CSRF ok, sanitization ok.
-				self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
-			}
-		}
-
-		$download_ids = $data_store->get_downloads(
-			array(
-				'user_email'  => sanitize_email( str_replace( ' ', '+', $email_address ) ),
-				'order_key'   => wc_clean( wp_unslash( $_GET['order'] ) ), // WPCS: input var ok, CSRF ok.
-				'product_id'  => $product_id,
-				'download_id' => wc_clean( preg_replace( '/\s+/', ' ', wp_unslash( $_GET['key'] ) ) ), // WPCS: input var ok, CSRF ok, sanitization ok.
-				'orderby'     => 'downloads_remaining',
-				'order'       => 'DESC',
-				'limit'       => 1,
-				'return'      => 'ids',
-			)
-		);
-
-		if ( empty( $download_ids ) ) {
-			self::download_error( __( 'Invalid download link.', 'ml-textdomain' ) );
-		}
-
-		$download = new WC_Customer_Download( current( $download_ids ) );
-
-		/**
-		 * Filter download filepath.
-		 *
-		 * @since 4.0.0
-		 * @param string $file_path File path.
-		 * @param string $email_address Email address.
-		 * @param WC_Order|bool $order Order object or false.
-		 * @param WC_Product $product Product object.
-		 * @param WC_Customer_Download $download Download data.
-		 */
-		$file_path = apply_filters(
-			'woocommerce_download_product_filepath',
-			$product->get_file_download_path( $download->get_download_id() ),
-			$email_address,
-			$order,
-			$product,
-			$download
-		);
-
-		$parsed_file_path = self::parse_file_path( $file_path );
-		$download_range   = self::get_download_range( @filesize( $parsed_file_path['file_path'] ) );  // @codingStandardsIgnoreLine.
-
-		self::check_order_is_valid( $download );
-		if ( ! $download_range['is_range_request'] ) {
-			// If the remaining download count goes to 0, allow range requests to be able to finish streaming from iOS devices.
-			self::check_downloads_remaining( $download );
-		}
-		self::check_download_expiry( $download );
-		self::check_download_login_required( $download );
-
-		do_action(
-			'woocommerce_download_product',
-			$download->get_user_email(),
-			$download->get_order_key(),
-			$download->get_product_id(),
-			$download->get_user_id(),
-			$download->get_download_id(),
-			$download->get_order_id()
-		);
-		$download->save();
-
-		// Track the download in logs and change remaining/counts.
-		$current_user_id = get_current_user_id();
-		$ip_address      = WC_Geolocation::get_ip_address();
-		if ( ! $download_range['is_range_request'] ) {
-			$download->track_download( $current_user_id > 0 ? $current_user_id : null, ! empty( $ip_address ) ? $ip_address : null );
-		}
-
-		self::download( $file_path, $download->get_product_id() );
-	}
-
-	/**
-	 * Check if an order is valid for downloading from.
-	 *
-	 * @param WC_Customer_Download $download Download instance.
-	 */
-	private static function check_order_is_valid( $download ) {
-		if ( $download->get_order_id() ) {
-			$order = wc_get_order( $download->get_order_id() );
-
-			if ( $order && ! $order->is_download_permitted() ) {
-				self::download_error( __( 'Invalid order.', 'ml-textdomain' ), '', 403 );
-			}
-		}
-	}
-
-	/**
-	 * Check if there are downloads remaining.
-	 *
-	 * @param WC_Customer_Download $download Download instance.
-	 */
-	private static function check_downloads_remaining( $download ) {
-		if ( '' !== $download->get_downloads_remaining() && 0 >= $download->get_downloads_remaining() ) {
-			self::download_error( __( 'Sorry, you have reached your download limit for this file', 'ml-textdomain' ), '', 403 );
-		}
-	}
-
-	/**
-	 * Check if the download has expired.
-	 *
-	 * @param WC_Customer_Download $download Download instance.
-	 */
-	private static function check_download_expiry( $download ) {
-		if ( ! is_null( $download->get_access_expires() ) && $download->get_access_expires()->getTimestamp() < strtotime( 'midnight', time() ) ) {
-			self::download_error( __( 'Sorry, this download has expired', 'ml-textdomain' ), '', 403 );
-		}
-	}
-
-	/**
-	 * Check if a download requires the user to login first.
-	 *
-	 * @param WC_Customer_Download $download Download instance.
-	 */
-	private static function check_download_login_required( $download ) {
-		if ( $download->get_user_id() && 'yes' === get_option( 'woocommerce_downloads_require_login' ) ) {
-			if ( ! is_user_logged_in() ) {
-				if ( wc_get_page_id( 'myaccount' ) ) {
-					wp_safe_redirect( add_query_arg( 'wc_error', rawurlencode( __( 'You must be logged in to download files.', 'ml-textdomain' ) ), wc_get_page_permalink( 'myaccount' ) ) );
-					exit;
-				} else {
-					self::download_error( __( 'You must be logged in to download files.', 'ml-textdomain' ) . ' <a href="' . esc_url( wp_login_url( wc_get_page_permalink( 'myaccount' ) ) ) . '" class="wc-forward">' . __( 'Login', 'ml-textdomain' ) . '</a>', __( 'Log in to Download Files', 'ml-textdomain' ), 403 );
-				}
-			} elseif ( ! current_user_can( 'download_file', $download ) ) {
-				self::download_error( __( 'This is not your download link.', 'ml-textdomain' ), '', 403 );
-			}
-		}
-	}
-
-	/**
-	 * Count download.
-	 *
-	 * @deprecated 4.4.0
-	 * @param array $download_data Download data.
-	 */
-	public static function count_download( $download_data ) {
-		wc_deprecated_function( 'WC_Download_Handler::count_download', '4.4.0', '' );
+		self::download( $file_path, $product_id );
 	}
 
 	/**
@@ -226,8 +106,6 @@ class ML_Download_Handler {
 			$filename = current( explode( '?', $filename ) );
 		}
 
-		$filename = apply_filters( 'woocommerce_file_download_filename', $filename, $product_id );
-
 		/**
 		 * Filter download method.
 		 *
@@ -242,7 +120,7 @@ class ML_Download_Handler {
 		add_action( 'nocache_headers', array( __CLASS__, 'ie_nocache_headers_fix' ) );
 
 		// Trigger download via one of the methods.
-		do_action( 'woocommerce_download_file_' . $file_download_method, $file_path, $filename );
+		do_action( 'ml_download_file_' . $file_download_method, $file_path, $filename );
 	}
 
 	/**
@@ -325,7 +203,7 @@ class ML_Download_Handler {
 		*/
 		return array(
 			'remote_file' => $remote_file,
-			'file_path'   => apply_filters( 'woocommerce_download_parse_file_path', $file_path, $remote_file ),
+			'file_path'   => apply_filters( 'ml_download_parse_file_path', $file_path, $remote_file ),
 		);
 	}
 
@@ -343,37 +221,30 @@ class ML_Download_Handler {
 		 * 1. xsendfile needs proxy configuration to work for remote files, which cannot be assumed to be available on most hosts.
 		 * 2. Force download method is more secure than redirect method if `allow_url_fopen` is enabled in `php.ini`.
 		 */
-		if ( $parsed_file_path['remote_file'] && ! apply_filters( 'woocommerce_use_xsendfile_for_remote', false ) ) {
-			do_action( 'woocommerce_download_file_force', $file_path, $filename );
+		if ( $parsed_file_path['remote_file'] && ! apply_filters( 'ml_use_xsendfile_for_remote', false ) ) {
+			do_action( 'ml_download_file_force', $file_path, $filename );
 			return;
 		}
 
 		if ( function_exists( 'apache_get_modules' ) && in_array( 'mod_xsendfile', apache_get_modules(), true ) ) {
 			self::download_headers( $parsed_file_path['file_path'], $filename );
-			$filepath = apply_filters( 'woocommerce_download_file_xsendfile_file_path', $parsed_file_path['file_path'], $file_path, $filename, $parsed_file_path );
+			$filepath = apply_filters( 'ml_download_file_xsendfile_file_path', $parsed_file_path['file_path'], $file_path, $filename, $parsed_file_path );
 			header( 'X-Sendfile: ' . $filepath );
 			exit;
 		} elseif ( stristr( getenv( 'SERVER_SOFTWARE' ), 'lighttpd' ) ) {
 			self::download_headers( $parsed_file_path['file_path'], $filename );
-			$filepath = apply_filters( 'woocommerce_download_file_xsendfile_lighttpd_file_path', $parsed_file_path['file_path'], $file_path, $filename, $parsed_file_path );
+			$filepath = apply_filters( 'ml_download_file_xsendfile_lighttpd_file_path', $parsed_file_path['file_path'], $file_path, $filename, $parsed_file_path );
 			header( 'X-Lighttpd-Sendfile: ' . $filepath );
 			exit;
 		} elseif ( stristr( getenv( 'SERVER_SOFTWARE' ), 'nginx' ) || stristr( getenv( 'SERVER_SOFTWARE' ), 'cherokee' ) ) {
 			self::download_headers( $parsed_file_path['file_path'], $filename );
 			$xsendfile_path = trim( preg_replace( '`^' . str_replace( '\\', '/', getcwd() ) . '`', '', $parsed_file_path['file_path'] ), '/' );
-			$xsendfile_path = apply_filters( 'woocommerce_download_file_xsendfile_x_accel_redirect_file_path', $xsendfile_path, $file_path, $filename, $parsed_file_path );
+			$xsendfile_path = apply_filters( 'ml_download_file_xsendfile_x_accel_redirect_file_path', $xsendfile_path, $file_path, $filename, $parsed_file_path );
 			header( "X-Accel-Redirect: /$xsendfile_path" );
 			exit;
 		}
 
 		// Fallback.
-		wc_get_logger()->warning(
-			sprintf(
-				/* translators: %1$s contains the filepath of the digital asset. */
-				__( '%1$s could not be served using the X-Accel-Redirect/X-Sendfile method. A Force Download will be used instead.', 'ml-textdomain' ),
-				$file_path
-			)
-		);
 		self::download_file_force( $file_path, $filename );
 	}
 
