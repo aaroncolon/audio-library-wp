@@ -23,12 +23,12 @@ function ml_get_download_files_handler() {
 
   else :
 
-    if (get_field('ml_downloads_storage_type') === 'aws-s3') :
+    if (get_field('ml_downloads_storage_type', 'option') === 'aws-s3') :
 
       // Build S3 Presigned Request URL
       $d_url = ml_get_s3_presigned_request();
 
-      $transient_ttl = get_field('ml_aws_s3_presigned_req_ttl', 'options');
+      $transient_ttl = get_field('ml_aws_s3_presigned_req_ttl', 'option');
     
     else :
 

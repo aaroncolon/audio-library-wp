@@ -274,7 +274,10 @@ if ( class_exists('woocommerce') ) {
  * Paid Memberships Pro includes
  */
 if ( defined( 'PMPRO_VERSION' ) ) {
-	// require 'inc/aws-s3.php';
+	if (get_field('ml_downloads_storage_type', 'option') === 'aws-s3') {
+		require 'inc/aws-s3.php';
+	}
+
 	require 'inc/pmpro-functions.php';
 	require 'inc/ajax-functions-download.php';
 	require 'inc/ajax-functions-user-downloads.php';
