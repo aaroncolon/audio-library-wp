@@ -93,7 +93,8 @@ function ml_enqueue_scripts() {
 	wp_enqueue_script( 'ml-matchheight', get_stylesheet_directory_uri() . '/assets/js/src/vendor/match-height/jquery.matchHeight-min.js', array('jquery'), '', true);
 
 	wp_enqueue_script( 'ml-main', get_stylesheet_directory_uri() . '/assets/js/dist/bundle.js', array('jquery', 'wp-util'), '', true);
-	wp_localize_script( 'ml-main', 'ml_js_data', array(
+	
+	$ml_js_data = array(
 		'ajax_url'                 => admin_url('admin-ajax.php'),
 		'current_song'             => array('id' => 0, 'isPlaying' => false),
 		'default_song'             => ml_player_default_song(),
@@ -102,10 +103,15 @@ function ml_enqueue_scripts() {
 		'page_template_slug'       => get_page_template_slug(),
 		'customer_type_individual' => get_field('ml_individual_customer_type', 'option'),
 		'monetization_model'       => get_field('ml_monetization_model', 'option'),
-		'membership_data'					 => (get_field('ml_monetization_model', 'option') === 'membership' && pmpro_getMembershipLevelForUser(get_current_user_id())) ? pmpro_getMembershipLevelForUser(get_current_user_id()) : null,
+		'membership_data'					 => null,
 		'user_id'									 => get_current_user_id(),
-		)
 	);
+
+	if ( defined( 'PMPRO_VERSION' ) && is_plugin_active('paid-memberships-pro/paid-memberships-pro.php') ) {
+		$ml_js_data['membership_data'] = (get_field('ml_monetization_model', 'option') === 'membership' && pmpro_getMembershipLevelForUser(get_current_user_id())) ? pmpro_getMembershipLevelForUser(get_current_user_id()) : null;
+	}
+
+	wp_localize_script( 'ml-main', 'ml_js_data', $ml_js_data );
 }
 add_action( 'wp_enqueue_scripts', 'ml_enqueue_scripts', 20 );
 
@@ -273,7 +279,7 @@ if ( class_exists('woocommerce') ) {
 /**
  * Paid Memberships Pro includes
  */
-if ( defined( 'PMPRO_VERSION' ) ) {
+if ( defined( 'PMPRO_VERSION' ) && is_plugin_active('paid-memberships-pro/paid-memberships-pro.php') ) {
 	if (get_field('ml_downloads_storage_type', 'option') === 'aws-s3') {
 		require 'inc/aws-s3.php';
 	}
