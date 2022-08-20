@@ -58,7 +58,7 @@
         data-song-artist="{{ data.artist }}"
         data-song-image="{{{ data.songImage }}}"
         <# if ( ! data.isUserLoggedIn ) { #>
-          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), wc_get_page_permalink('myaccount')) ) ?>"
+          data-redirect-url="{{ ml_js_data.urls.wc_my_account }}"
           data-dialog-title="<?php esc_attr_e( 'Add to Favorites' ) ?>"
           data-dialog-description="<?php esc_attr_e( 'Sign in to add this song to your Favorites.' ) ?>"
           data-mfp-src="#confirm-dialog"
@@ -82,14 +82,14 @@
         data-song-image="{{{ data.songImage }}}"
         data-song-url="{{{ data.previewSongUrl }}}"
         <# if ( ! data.isUserLoggedIn && data.monetizationModel === 'licensing' ) { #>
-          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), wc_get_page_permalink('myaccount')) ) ?>"
+          data-redirect-url="{{{ ml_js_data.urls.wc_my_account }}}"
           data-dialog-title="<?php esc_attr_e( 'Purchase' ) ?>"
           data-dialog-description="<?php esc_attr_e( 'Sign in or create an account to purchase this item.' ) ?>"
           data-mfp-src="#confirm-dialog"
         <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'licensing' ) { #>
           data-mfp-src="#license-dialog"
         <# } else if ( ! data.isUserLoggedIn && data.monetizationModel === 'membership' ) { #>
-          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('login')) ) ?>"
+          data-redirect-url="{{{ ml_js_data.urls.pmpro_login }}}"
           data-dialog-title="<?php esc_attr_e( 'Download' ) ?>"
           data-dialog-description="<?php esc_attr_e( 'Log In to download this item.' ) ?>"
           data-dialog-accept="Log In"
@@ -98,7 +98,7 @@
           data-mfp-src="#download-dialog"
           data-song-key="{{ data.key }}"
         <# } else if ( data.isUserLoggedIn && data.monetizationModel === 'membership' && !data.membershipAccess ) { #>
-          data-redirect-url="<?php esc_attr_e( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('levels')) ) ?>"
+          data-redirect-url="{{{ ml_js_data.urls.pmpro_levels }}}"
           data-dialog-title="<?php esc_attr_e( 'Upgrade' ) ?>"
           data-dialog-description="<?php esc_attr_e( 'Upgrade your membership level to download this item.' ) ?>"
           data-dialog-accept="Upgrade"

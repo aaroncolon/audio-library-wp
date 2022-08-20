@@ -5,6 +5,8 @@ require 'inc/custom-post-types.php';
 require 'inc/utils.php';
 require 'inc/favicons.php';
 require 'inc/robots.php';
+require 'inc/acf-functions.php';
+require 'inc/acf-functions-options.php';
 
 /**
  * Custom Google Fonts
@@ -105,10 +107,20 @@ function ml_enqueue_scripts() {
 		'monetization_model'       => get_field('ml_monetization_model', 'option'),
 		'membership_data'					 => null,
 		'user_id'									 => get_current_user_id(),
+		'urls'										 => array(
+			'wc_my_account' => esc_attr( add_query_arg('redirect', rawurlencode(get_the_permalink()), wc_get_page_permalink('myaccount')) ),
+			'pmpro_login'		=> null,
+			'pmpro_levels' 	=> null 
+		)
 	);
 
+	// Add PMPro data
 	if ( defined( 'PMPRO_VERSION' ) && is_plugin_active('paid-memberships-pro/paid-memberships-pro.php') ) {
-		$ml_js_data['membership_data'] = (get_field('ml_monetization_model', 'option') === 'membership' && pmpro_getMembershipLevelForUser(get_current_user_id())) ? pmpro_getMembershipLevelForUser(get_current_user_id()) : null;
+		if (get_field('ml_monetization_model', 'option') === 'membership') {
+			$ml_js_data['membership_data'] = (pmpro_getMembershipLevelForUser(get_current_user_id())) ? pmpro_getMembershipLevelForUser(get_current_user_id()) : null;
+			$ml_js_data['urls']['pmpro_login'] = esc_attr( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('login')) );
+			$ml_js_data['urls']['pmpro_levels'] = esc_attr( add_query_arg('redirect', rawurlencode(get_the_permalink()), pmpro_url('levels')) );
+		}
 	}
 
 	wp_localize_script( 'ml-main', 'ml_js_data', $ml_js_data );
@@ -260,6 +272,7 @@ add_filter( 'storefront_credit_link', 'ml_storefront_credit_link', 10, 1 );
  * WooCommerce includes
  */
 if ( class_exists('woocommerce') ) {
+	require 'inc/acf-functions-wc.php';	// prepopulate ACF fields with WC data
 	require 'inc/favorites.php';
 	require 'inc/woocommerce/storefront-woocommerce-template-functions.php';
 	require 'inc/woocommerce/storefront-woocommerce-template-functions-dialogs.php';
@@ -290,11 +303,6 @@ if ( defined( 'PMPRO_VERSION' ) && is_plugin_active('paid-memberships-pro/paid-m
 	require 'inc/user-downloads.php';
 	require 'inc/downloads.php';
 }
-
-/**
- * Advanced Custom Fields 
- */
-require 'inc/acf-functions.php';
 
 // // Add Sign Up or Log In button to content-single-product.php
 // add_action('woocommerce_single_product_summary', 'ml_wc_display_sign_up_log_in_message', 32);
